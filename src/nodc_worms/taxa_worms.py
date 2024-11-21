@@ -30,7 +30,7 @@ class TaxaWorms:
 
     def get_aphia_id(self, scientific_name: str = None) -> str:
         result = self._df.filter((pl.col('scientific_name') == scientific_name) &
-                                 (pl.col('status') == 'accepted'))['aphia_id']
+                                 (pl.col('status').is_in(['accepted', 'unassessed', 'unaccepted'])))['aphia_id']
         if not len(result):
             return ''
         if len(result) > 1:
