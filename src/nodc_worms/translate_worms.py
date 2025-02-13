@@ -14,7 +14,7 @@ class TranslateDyntaxa:
         self._load_file()
 
     def _load_file(self) -> None:
-        self._df = pl.read_csv(self._path, separator='\t', encoding='utf8')
+        self._df = pl.read_csv(self._path, separator='\t', encoding='cp1252')
 
     def get(self, name: str) -> str | bool:
         """Returns the translated taxon name of the given name"""

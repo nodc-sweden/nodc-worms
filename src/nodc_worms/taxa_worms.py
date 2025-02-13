@@ -1,5 +1,6 @@
 import logging
 import pathlib
+
 import polars as pl
 
 logger = logging.getLogger(__name__)
@@ -9,7 +10,7 @@ class TaxaWorms:
 
     def __init__(self, path: str | pathlib.Path, **kwargs):
         self._path = pathlib.Path(path)
-        self._encoding = kwargs.get('encoding', 'utf8')
+        self._encoding = kwargs.get('encoding', 'cp1252')
 
         self._header = []
         self._data = dict()

@@ -6,9 +6,9 @@ authors = [
     {name = "Magnus Wenzer", email = "magnus.wenzer@smhi.se"},
 ]
 dependencies = [
-    "polars>=0.20",
     "typer>=0.9.0",
     "requests>=2.31.0",
+    "polars>=1.17.1",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
