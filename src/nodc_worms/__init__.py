@@ -20,6 +20,7 @@ CONFIG_DIRECTORY = None
 if os.getenv(CONFIG_ENV) and pathlib.Path(os.getenv(CONFIG_ENV)).exists():
     CONFIG_DIRECTORY = pathlib.Path(os.getenv(CONFIG_ENV))
 
+
 def get_config_path(name: str = None) -> pathlib.Path:
     if not CONFIG_DIRECTORY:
         raise NotADirectoryError(f'Config directory not found. Environment path {CONFIG_ENV} does not seem to be set.')
@@ -31,7 +32,6 @@ def get_config_path(name: str = None) -> pathlib.Path:
     if not path.exists():
         raise FileNotFoundError(f'Could not find config file {name}')
     return path
-
 
 
 @functools.cache
