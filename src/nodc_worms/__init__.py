@@ -10,6 +10,14 @@ logger = logging.getLogger(__name__)
 
 CONFIG_ENV = 'NODC_CONFIG'
 
+home = pathlib.Path.home()
+OTHER_CONFIG_SOURCES = [
+    home / 'NODC_CONFIG',
+    home / '.NODC_CONFIG',
+    home / 'nodc_config',
+    home / '.nodc_config',
+]
+
 CONFIG_FILE_NAMES = [
     'taxa_worms.txt',
     'translate_to_worms.txt',
@@ -19,6 +27,11 @@ CONFIG_FILE_NAMES = [
 CONFIG_DIRECTORY = None
 if os.getenv(CONFIG_ENV) and pathlib.Path(os.getenv(CONFIG_ENV)).exists():
     CONFIG_DIRECTORY = pathlib.Path(os.getenv(CONFIG_ENV))
+else:
+    for directory in OTHER_CONFIG_SOURCES:
+        if directory.exists():
+            CONFIG_DIRECTORY = directory
+            break
 
 
 def get_config_path(name: str = None) -> pathlib.Path:
