@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class TaxaWorms:
     def __init__(self, path: str | pathlib.Path, **kwargs):
         self._path = pathlib.Path(path)
-        self._encoding = kwargs.get("encoding", "cp1252")
+        self._encoding = kwargs.get("encoding", "latin1")
 
         self._header = []
         self._data = dict()
@@ -30,7 +30,14 @@ class TaxaWorms:
         return sorted(self._df.columns)
 
     def _load_file(self) -> None:
-        self._df = pl.read_csv(self._path, separator="\t", encoding=self._encoding)
+        # self._df = pl.read_csv(self._path, separator="\t", encoding=self._encoding)
+        self._df = pl.read_csv(
+            self._path,
+            encoding=self._encoding,
+            separator="\t",
+            infer_schema=False,
+            missing_utf8_is_empty_string=True,
+        )
 
     def get_aphia_id(self, scientific_name: str = None) -> str:
         # result = self._df.filter((pl.col('scientific_name') == scientific_name) &
@@ -38,6 +45,7 @@ class TaxaWorms:
         #                          'unaccepted'])))['aphia_id']
         result = self._df.filter(pl.col("scientific_name") == scientific_name)[
             "aphia_id"
+            # "valid_aphia_id"
         ]
         if not len(result):
             return ""
