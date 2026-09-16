@@ -1,9 +1,6 @@
-import logging
 import pathlib
 
 import polars as pl
-
-logger = logging.getLogger(__name__)
 
 
 class TaxaWorms:
@@ -32,13 +29,8 @@ class TaxaWorms:
     def _load_file(self) -> None:
         self._df = pl.read_csv(self._path, separator="\t", encoding=self._encoding)
 
-    def get_aphia_id(self, scientific_name: str = None) -> str:
-        # result = self._df.filter((pl.col('scientific_name') == scientific_name) &
-        #                          (pl.col('status').is_in(['accepted', 'unassessed',
-        #                          'unaccepted'])))['aphia_id']
-        result = self._df.filter(pl.col("scientific_name") == scientific_name)[
-            "aphia_id"
-        ]
+    def get_aphia_id(self, scientific_name: str) -> str:
+        result = self._df.filter(pl.col("scientific_name") == scientific_name)["aphia_id"]
         if not len(result):
             return ""
         if len(result) > 1:
