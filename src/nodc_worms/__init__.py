@@ -1,85 +1,26 @@
 import functools
-import logging
-import os
 import pathlib
+
+from nodc_config import Config
 
 from nodc_worms.taxa_worms import TaxaWorms
 from nodc_worms.translate_worms import TranslateDyntaxa
 
 
-def get_user_given_config_dir() -> pathlib.Path | None:
-    path = pathlib.Path(os.getcwd()) / "config_directory.txt"
-    if not path.exists():
-        return
-    with open(path) as fid:
-        config_path = fid.readline().strip()
-        if not config_path:
-            return
-        config_path = pathlib.Path(config_path)
-        if not config_path.exists():
-            return
-        return config_path
-
-
-logger = logging.getLogger(__name__)
-
-CONFIG_ENV = "NODC_CONFIG"
-
-home = pathlib.Path.home()
-OTHER_CONFIG_SOURCES = [
-    home / "NODC_CONFIG",
-    home / ".NODC_CONFIG",
-    home / "nodc_config",
-    home / ".nodc_config",
-]
-
-CONFIG_FILE_NAMES = [
-    "taxa_worms.txt",
-    "translate_to_worms.txt",
-]
-
-
-CONFIG_DIRECTORY = None
-conf_dir = get_user_given_config_dir()
-if conf_dir:
-    CONFIG_DIRECTORY = conf_dir
-else:
-    if os.getenv(CONFIG_ENV) and pathlib.Path(os.getenv(CONFIG_ENV)).exists():
-        CONFIG_DIRECTORY = pathlib.Path(os.getenv(CONFIG_ENV))
-    else:
-        for directory in OTHER_CONFIG_SOURCES:
-            if directory.exists():
-                CONFIG_DIRECTORY = directory
-                break
-
-
-def get_config_path(name: str = None) -> pathlib.Path:
-    if not CONFIG_DIRECTORY:
-        raise NotADirectoryError(
-            f"Config directory not found. Environment path {CONFIG_ENV} does not seem to be set."
-        )
-    if not name:
-        return CONFIG_DIRECTORY
-    if name not in CONFIG_FILE_NAMES:
-        raise FileNotFoundError(f'No config file with name "{name}" exists')
-    path = CONFIG_DIRECTORY / name
-    if not path.exists():
-        raise FileNotFoundError(f"Could not find config file {name}")
+def get_config_path(nodc_conf: Config, name: str) -> pathlib.Path:
+    path = nodc_conf.get_path(name)
+    if path is None:
+        raise FileNotFoundError(f"nodc-config path '{name}' not found")
     return path
 
 
 @functools.cache
-def get_taxa_worms_object() -> "TaxaWorms":
-    taxa_worms_config_path = get_config_path("taxa_worms.txt")
+def get_taxa_worms_object(nodc_conf: Config) -> TaxaWorms:
+    taxa_worms_config_path = get_config_path(nodc_conf, "taxa_worms.txt")
     return TaxaWorms(str(taxa_worms_config_path))
 
 
 @functools.cache
-def get_translate_worms_object() -> "TranslateDyntaxa":
-    taxa_worms_config_path = get_config_path("translate_to_worms.txt")
+def get_translate_worms_object(nodc_conf: Config) -> TranslateDyntaxa:
+    taxa_worms_config_path = get_config_path(nodc_conf, "translate_to_worms.txt")
     return TranslateDyntaxa(str(taxa_worms_config_path))
-
-
-if __name__ == "__main__":
-    taxa = get_taxa_worms_object()
-    trans = get_translate_worms_object()

@@ -39,14 +39,8 @@ class TaxaWorms:
             missing_utf8_is_empty_string=True,
         )
 
-    def get_aphia_id(self, scientific_name: str = None) -> str:
-        # result = self._df.filter((pl.col('scientific_name') == scientific_name) &
-        #                          (pl.col('status').is_in(['accepted', 'unassessed',
-        #                          'unaccepted'])))['aphia_id']
-        result = self._df.filter(pl.col("scientific_name") == scientific_name)[
-            "aphia_id"
-            # "valid_aphia_id"
-        ]
+    def get_aphia_id(self, scientific_name: str | None = None) -> str:
+        result = self._df.filter(pl.col("scientific_name") == scientific_name)["aphia_id"]
         if not len(result):
             return ""
         if len(result) > 1:
